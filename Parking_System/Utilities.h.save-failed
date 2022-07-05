@@ -1,0 +1,116 @@
+#include <iostream>
+#include <iomanip>
+#include <windows.h>
+#include <vector>
+#include "Parking.h"
+#include "Four_Wheel.h"
+
+Parking p;
+std::vector<Four_Wheel> vt1;
+
+void addFourWheel(std::vector<Four_Wheel> &v);
+void checkFourWheelSerial(std::vector<Four_Wheel> &v);
+void acceptFourWheelPayment(std::vector<Four_Wheel> &v);
+
+//Following Two Function are used to calculate time difference
+int ConvertTimeToMinutes(int,int,bool);
+int ComputeTime(int,int,int,int,bool,bool);
+
+int ConvertTimeToMinutes(int hour, int min, bool pm){
+    if (hour == 12)
+        hour = 0;
+    int calc = hour*60 + min;
+    if (pm)
+        calc += 12*60;
+    return calc;
+}//end ConvertTime To Minutes
+
+// Compare times and return the absolute time difference in minutes
+int ComputeTime(int hour1, int hour2, int min1, int min2, bool pm1, bool pm2){
+    int calc1 = ConvertTimeToMinutes(hour1, min1, pm1);
+    int calc2 = ConvertTimeToMinutes(hour2, min2, pm2);
+    if (calc2 > calc1)
+    {
+        return calc2 - calc1;
+    }
+    else
+    {
+        return calc1 - calc2;
+    }
+}
+
+
+void addFourWheel(){
+
+    std::string number;
+    std::string name;
+
+    std::cout << std::endl <<"Vehicle No. Guide <STATE>space<DISTRICT_CODE>space<Series>space<REG_NO> eg. - MH 09 EW 2325" << std::endl;
+    std::cout << "Enter Vehicle Number - ";
+    std::cin.ignore();
+    std::getline(std::cin,number);
+
+    std::cout << std::endl << "Vehicle Name Guide eg. - Suzuki Swift" << std::endl;
+    std::cout << "Enter Vehicle Name - ";
+    std::getline(std::cin,name);
+
+    vt1.push_back(Four_Wheel{name,number});
+
+    vt1.back().Park_in_FourWheel();
+
+    std::cout << "Parking Granted...." << std::endl;
+    std::cout << "Vehicle Parked Successfully.... " << std::endl;
+
+    system("pause");
+}//end addFourWheel
+
+void checkFourWheelSerial(){
+    bool val {false};
+    std::string number;
+    std::cout << std::endl << "Vehicle No. Guide <STATE>space<DISTRICT_CODE>space<Series>space<REG_NO> eg. - MH 09 EW 2325" << std::endl;
+    std::cin.ignore();
+    std::cout << "Enter Vehicle Number  - ";
+    std::getline(std::cin,number);
+
+for(auto &vec: vt1){
+    if(number == vec.getvehicle_num()){
+        std::cout << "Vehicle Name - " << vec.getvehicle_name()
+             << " Associated with " << vec.getvehicle_num()
+             << " is Present in Parked In..." << std::endl;
+            val = true;
+            break;
+        }//end if
+    }//end for
+
+    if(!val)
+    std::cout << "Vehicle is Not Parked In.........." << std::endl;
+}//end checkFourWheelSerial
+
+void acceptFourWheelPayment(){
+     int i {-1}; bool found{false};
+     std::string number;
+     std::cout << std::endl << "Vehicle No. Guide <STATE>space<DISTRICT_CODE>space<Series>space<REG_NO> eg. - MH 09 EW 2325" << std::endl;
+     std::cout << "Enter Vehicle Number  - ";
+     std::cin.ignore();
+     std::getline(std::cin,number);
+
+    for(auto &vec: vt1){
+        i++;
+    if(number == vec.getvehicle_num()){
+        found = true;
+        vec.Park_out_FourWheel();
+        vec.Parking_Charge();
+        std::cout << "Payment Received...." << std::endl;
+        std::cout << "Car Parked Out......" << std::endl;
+        vt1.erase(vt1.begin() + i);
+        system("pause");
+        break;
+    }//end if
+
+    }//end for
+
+    if(!found){
+        std::cout << "Vehicle is not present in the parking......" << std::endl;
+        system("pause");
+    }
+}//end acceptFourWheelPayment
